@@ -8,12 +8,16 @@ on:
 jobs:
   apk:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: seda-studio
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with:
           node-version: 22
           cache: npm
+          cache-dependency-path: seda-studio/package-lock.json
       - uses: actions/setup-java@v4
         with:
           distribution: temurin
@@ -22,11 +26,11 @@ jobs:
       - run: npm ci
       - run: npx cap sync android
       - name: Build
-        working-directory: android
+        working-directory: seda-studio/android
         run: |
           chmod +x gradlew
           ./gradlew assembleDebug --no-daemon
       - uses: actions/upload-artifact@v4
         with:
           name: seda-studio-apk
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: seda-studio/android/app/build/outputs/apk/debug/app-debug.apk
