@@ -1,0 +1,9 @@
+{
+	"appId": "com.mahan.sedastudio",
+	"appName": "استودیو صدا",
+	"webDir": "www",
+	"android": {
+		"allowMixedContent": false
+	},
+	"backgroundColor": "#120a2e"
+}

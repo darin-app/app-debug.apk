@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#1a1040">
+<title>استودیو صدا</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<div class="bg" aria-hidden="true"><i class="b1"></i><i class="b2"></i><i class="b3"></i></div>
+
+<div class="app">
+  <header class="glass top">
+    <div class="brand"><span class="logo">♪</span><h1>استودیو صدا</h1></div>
+    <div class="top-actions">
+      <button id="btnUndo" class="icon-btn" title="برگشت" aria-label="برگشت">↶</button>
+      <button id="btnExport" class="btn primary">خروجی آهنگ</button>
+    </div>
+  </header>
+
+  <section class="glass transport">
+    <div class="time" id="timeDisplay" dir="ltr">00:00.0</div>
+    <div class="t-buttons">
+      <button id="btnStart" class="round" title="ابتدا" aria-label="ابتدا">⏮</button>
+      <button id="btnPlay" class="round big play" title="پخش" aria-label="پخش">▶</button>
+      <button id="btnStop" class="round" title="توقف" aria-label="توقف">⏹</button>
+      <button id="btnRec" class="round big rec" title="ضبط" aria-label="ضبط"><span class="dot"></span></button>
+    </div>
+    <div class="meter" id="meterWrap" title="سطح صدای میکروفون"><i id="meter"></i></div>
+    <div class="opts">
+      <label class="chk"><input type="checkbox" id="optOverdub" checked><span>پخش همزمان هنگام ضبط (با هدفون)</span></label>
+      <label class="chk"><input type="checkbox" id="optMicNS" checked><span>حذف نویز میکروفون هنگام ضبط</span></label>
+    </div>
+  </section>
+
+  <section class="glass add-row">
+    <button id="btnAddVoice" class="btn">🎤 آپلود ویس</button>
+    <button id="btnAddBeat" class="btn">🥁 آپلود بیت</button>
+    <label class="zoom"><span>بزرگ‌نمایی</span><input type="range" id="zoom" min="20" max="400" value="80"></label>
+    <input type="file" id="fileVoice" accept="audio/*,video/mp4" hidden multiple>
+    <input type="file" id="fileBeat" accept="audio/*,video/mp4" hidden multiple>
+  </section>
+
+  <section class="glass timeline-card">
+    <div id="scroller" class="scroller">
+      <div id="content" class="content">
+        <div id="view" class="view">
+          <canvas id="cv"></canvas>
+          <div id="heads" class="heads"></div>
+        </div>
+      </div>
+    </div>
+    <p id="emptyHint" class="hint">هنوز صدایی نیست. با دکمه‌ی قرمز ضبط کنید یا ویس/بیت آپلود کنید.</p>
+  </section>
+
+  <section id="editor" class="glass editor hidden">
+    <div class="ed-head">
+      <b id="edName">کلیپ</b><span id="edInfo" class="muted"></span>
+    </div>
+    <div class="ed-grid">
+      <button id="edSplit" class="btn">✂ برش در نشانگر</button>
+      <button id="edDup" class="btn">⧉ تکثیر</button>
+      <button id="edDel" class="btn danger">🗑 حذف</button>
+      <button id="edDenoise" class="btn accent">✨ حذف نویز</button>
+      <button id="edRestore" class="btn hidden">↺ بازگردانی صدای اصلی</button>
+    </div>
+    <div class="sliders">
+      <label><span>بلندی صدا <em id="vGain">۱۰۰٪</em></span><input type="range" id="edGain" min="0" max="200" value="100"></label>
+      <label><span>شدت حذف نویز <em id="vNs">۶۰٪</em></span><input type="range" id="edNs" min="10" max="100" value="60"></label>
+      <label><span>محو شدن ابتدا <em id="vFi">۰</em></span><input type="range" id="edFi" min="0" max="50" value="0"></label>
+      <label><span>محو شدن انتها <em id="vFo">۰</em></span><input type="range" id="edFo" min="0" max="50" value="0"></label>
+    </div>
+    <p class="muted small">برای جابه‌جایی، کلیپ انتخاب‌شده را بکشید. برای کوتاه کردن، لبه‌های چپ و راست را بکشید.</p>
+  </section>
+</div>
+
+<div id="modal" class="modal hidden">
+  <div class="glass sheet">
+    <h2>خروجی گرفتن</h2>
+    <label class="field"><span>نام فایل</span><input type="text" id="exName" value="آهنگ من"></label>
+    <div class="field"><span>فرمت</span>
+      <div class="seg">
+        <label><input type="radio" name="fmt" value="mp3" checked><b>MP3</b></label>
+        <label><input type="radio" name="fmt" value="wav"><b>WAV</b></label>
+      </div>
+    </div>
+    <label class="chk"><input type="checkbox" id="exNorm" checked><span>هم‌سطح کردن بلندی (جلوگیری از اعوجاج)</span></label>
+    <div class="row">
+      <button id="exCancel" class="btn">انصراف</button>
+      <button id="exGo" class="btn primary">ساخت و ذخیره</button>
+    </div>
+  </div>
+</div>
+
+<div id="busy" class="busy hidden"><div class="glass box"><div class="spin"></div><p id="busyMsg">لطفاً صبر کنید…</p></div></div>
+<div id="toast" class="toast"></div>
+
+<script src="dsp.js"></script>
+<script src="lame.min.js"></script>
+<script src="app.js"></script>
+</body>
+</html>
